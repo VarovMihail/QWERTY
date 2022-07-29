@@ -17,29 +17,34 @@ class VKinder:
         params = {'owner_id': id,
                   'album_id': 'profile',
                   'extended': 1}
-        res = requests.get(self.base_url + method, params={**params, **self.params})
-        for el in res.json()['response']['items']:
+        res = requests.get(self.base_url + method, params={**params, **self.params}).json()
+        #pprint(res)
+        for el in res['response']['items']:
             result[f"photo{el['owner_id']}_{el['id']}"] = el['likes']['count']
         user_photo = [photo for photo in sorted(result, key=result.get, reverse=True)[:3]]
             #result[el['sizes'][-1]['url']] = el[f'likes']['count']
         return user_photo
 
     def search(self):
-        if self.gender.lower() == 'мужской':
+        if self.gender.lower() in ['мужской', 'м']:
             self.gender = 2
-        elif self.gender.lower() == 'женский':
+        elif self.gender.lower() in ['женский', 'ж']:
             self.gender = 1
         method = 'users.search'
-        params = {'count': 50,
+        params = {'count': 10,
+                  'can_access_closed':True,
                   'age_from': self.min_age,
                   'age_to': self.max_age,
                   'hometown': self.city,
                   'sex': self.gender,
                   'fields': 'home_town'}
         res = requests.get(self.base_url + method, params={**params, **self.params}).json()
+        pprint(res)
         l = []
         for el in res['response']['items']:
-            if 'home_town' in el:
+
+            if el['can_access_closed']:
+                print(el)
                 first_name = el["first_name"]
                 last_name = el["last_name"]
                 owner_id = el["id"]
