@@ -1,0 +1,5 @@
+vk_api
+pprint
+vk_api.keyboard
+psycopg2
+
